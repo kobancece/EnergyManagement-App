@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Main Page - EnergyHub</title>
+<style>
+  body { font-family: Arial, sans-serif; background-color: #e8f5e9; }
+  .header { background-color: #4caf50; color: white; padding: 10px 0; text-align: center; }
+  .main-container { width: 80%; margin: 20px auto; text-align: center; }
+  .button-container { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+  .button { 
+      background-color: #ffffff; 
+      padding: 10px 20px; 
+      border: 1px solid #ddd; 
+      border-radius: 5px; 
+      cursor: pointer; 
+      transition: background-color 0.3s; 
+  }
+  .button:hover { background-color: #4caf50; color: white; }
+  .tips { background-color: #a5d6a7; padding: 20px; border-radius: 8px; margin: 20px 0; }
+  .footer { position: fixed; bottom: 0; width: 100%; background-color: #4caf50; color: white; padding: 10px 0; text-align: center; }
+  .sign-out { background-color: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+  .tree-icon {
+      width: 50px;
+      height: 50px;
+      background-image: url('data:image/png;base64, INSERT_BASE64_ENCODED_IMAGE_HERE');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      display: inline-block;
+      vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="tree-icon"></div> <!-- Tree Icon -->
+  <h1>Welcome to EnergyHub</h1>
+</div>
+
+<div class="main-container">
+  <div class="button-container">
+    <div class="button" id="showConsumption">Show Consumption</div>
+    <div class="button" id="showCost">Show Cost</div>
+    <div class="button" id="showTips">Show Usage Tips</div>
+  </div>
+  
+  <div class="tips">
+    <h2>Environment Suggestions</h2>
+    <p>By reducing your energy consumption, you contribute to a healthier planet. Here are a few suggestions:</p>
+    <ul>
+      <li>Switch to LED lightbulbs for efficient lighting.</li>
+      <li>Unplug devices when not in use to save energy.</li>
+      <li>Use a programmable thermostat to reduce unnecessary heating or cooling.</li>
+      <li>Consider solar panels to harness renewable energy.</li>
+    </ul>
+  </div>
+
+  <button class="sign-out" onclick="signOut()">Sign Out</button>
+</div>
+
+<div class="footer">
+  <p>Together, we can make a difference for the future of our planet.</p>
+</div>
+
+<script>
+function signOut() {
+  // Implement sign-out logic
+  window.location.href = 'index.html'; // Redirect to sign-in page
+}
+</script>
+
+</body>
+</html>
