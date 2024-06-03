@@ -18,7 +18,9 @@
   }
   input[type="submit"]:hover, button:hover { background-color: #4cae4c; }
   .signup-prompt { text-align: center; margin-top: 20px; cursor: pointer; color: #5cb85c; }
-  #signUpContainer { display: none; }
+  #signUpContainer, #enable2FAContainer { display: none; }
+  .button-group { margin-top: 20px; }
+  .button-group button { margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -34,9 +36,14 @@
       <label for="signInPassword">Password:</label>
       <input type="password" id="signInPassword" name="password">
     </div>
+    <div class="form-group">
+      <label for="signInToken">2FA Token:</label>
+      <input type="text" id="signInToken" name="token">
+    </div>
     <button type="submit">Sign In</button>
   </form>
   <div class="signup-prompt" id="showSignUpForm">Not a member? <span>Sign Up</span></div>
+  <div class="signup-prompt" id="showEnable2FAForm">Enable 2FA</div>
 </div>
 
 <div class="container" id="signUpContainer">
@@ -74,11 +81,32 @@
   </form>
 </div>
 
+<div class="container" id="enable2FAContainer">
+  <h2>Enable 2FA</h2>
+  <div class="button-group">
+    <button id="enable2FAButton">Generate QR Code</button>
+    <button id="backButton">Back</button>
+  </div>
+  <div id="qrCodeContainer"></div>
+</div>
+
 <script>
 // Show sign-up form
 document.getElementById('showSignUpForm').addEventListener('click', function() {
   document.getElementById('signInContainer').style.display = 'none';
   document.getElementById('signUpContainer').style.display = 'block';
+});
+
+// Show enable 2FA form
+document.getElementById('showEnable2FAForm').addEventListener('click', function() {
+  document.getElementById('signInContainer').style.display = 'none';
+  document.getElementById('enable2FAContainer').style.display = 'block';
+});
+
+// Handle back button click
+document.getElementById('backButton').addEventListener('click', function() {
+  document.getElementById('enable2FAContainer').style.display = 'none';
+  document.getElementById('signInContainer').style.display = 'block';
 });
 
 // Handle sign-up submission
@@ -121,10 +149,52 @@ document.getElementById('signInForm').addEventListener('submit', function(event)
   event.preventDefault();
   var signInData = {
     email: document.getElementById('signInEmail').value,
-    password: document.getElementById('signInPassword').value
+    password: document.getElementById('signInPassword').value,
+    token: document.getElementById('signInToken').value // Add this line
   };
 
-  window.location.href = './mainPage.html'; // Redirect to the main page after "login"
+  fetch('/energymanagement/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(signInData)
+  })
+  .then(response => response.json())
+  .then(json => {
+    if (json.message === 'Authentication successful') {
+      window.location.href = './mainPage.html'; // Redirect to the main page after "login"
+    } else {
+      alert('Login failed: ' + json.message);
+    }
+  })
+  .catch(err => {
+    alert('An error occurred: ' + err.message);
+  });
+});
+
+// Handle 2FA enablement
+document.getElementById('enable2FAButton').addEventListener('click', function() {
+  fetch('http://localhost:3001/twofa/enable-2fa', { // Update URL to new service
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ userId: 1 }) // Replace with the actual user ID
+  })
+  .then(response => response.json())
+  .then(json => {
+    if (json.qrCode) {
+      var img = document.createElement('img');
+      img.src = json.qrCode;
+      document.getElementById('qrCodeContainer').appendChild(img);
+    } else {
+      alert('Failed to generate QR code: ' + json.message);
+    }
+  })
+  .catch(err => {
+    alert('An error occurred: ' + err.message);
+  });
 });
 </script>
 
