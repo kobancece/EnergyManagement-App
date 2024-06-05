@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -11,7 +13,7 @@ const app = express();
 
 // Configure session middleware
 app.use(session({
-  secret: 'xxxxxx', 
+  secret: process.env.sessionSecret,
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false }
