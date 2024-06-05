@@ -5,28 +5,97 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EnergyHub - Sign In & Sign Up</title>
 <style>
-  body { font-family: Arial, sans-serif; }
-  .container { width: 300px; margin: auto; padding: 20px; }
-  .form-group { margin-bottom: 15px; }
-  label { display: block; margin-bottom: 5px; }
+  body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background-color: #d4edda;
+    font-weight: bold;
+    color: #547c54;
+  }
+  .container {
+    background-color: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 400px;
+  }
+  .form-group {
+  margin-bottom: 15px;
+  text-align: left;  /* Align text labels to the left */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center items in the flex container */
+}
+  label, input, button {
+    display: block;
+    width: 100%;
+    margin: auto;
+    font-weight: bold;
+  }
   input[type="text"], input[type="email"], input[type="password"], input[type="tel"] {
-      width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #d4edda;
   }
   input[type="submit"], button {
-      width: 100%; padding: 10px; border-radius: 5px; background-color: #5cb85c; color: white;
-      border: none; cursor: pointer;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    cursor: pointer;
   }
-  input[type="submit"]:hover, button:hover { background-color: #4cae4c; }
-  .signup-prompt { text-align: center; margin-top: 20px; cursor: pointer; color: #5cb85c; }
-  #signUpContainer, #enable2FAContainer { display: none; }
-  .button-group { margin-top: 20px; }
-  .button-group button { margin-bottom: 10px; }
+  input[type="submit"]:hover, button:hover {
+    background-color: #4cae4c;
+  }
+  .signup-prompt {
+    text-align: center;
+    margin-top: 20px;
+    cursor: pointer;
+    color: #5cb85c;
+  }
+  #signUpContainer, #enable2FAContainer {
+    display: none;
+  }
+  .button-group {
+    margin-top: 20px;
+  }
+  .button-group button {
+    margin-bottom: 10px;
+  }
+  .logo {
+    width: 400px;
+    margin-bottom: 20px;
+  }
+  .button-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.button-row button {
+  width: 45%;
+  padding: 8px;
+  font-size: 14px;
+}
 </style>
 </head>
 <body>
 
+<img src="logo.png" alt="Logo" class="logo">
+<br />
 <div class="container" id="signInContainer">
-  <h2>Sign In</h2>
+  
+  <h1>Energy Management</h1>
   <form id="signInForm">
     <div class="form-group">
       <label for="signInEmail">Email:</label>
@@ -47,7 +116,6 @@
 </div>
 
 <div class="container" id="signUpContainer">
-  <h2>Sign Up</h2>
   <form id="signUpForm">
     <div class="form-group">
       <label for="firstName">First Name:</label>
@@ -77,8 +145,10 @@
       <label for="address">Address:</label>
       <input type="text" id="address" name="address" required>
     </div>
-    <button type="submit" class="button">Save</button>
-  </form>
+    <div class="button-row">
+      <button type="submit" class="button">Save</button>
+      <button type="button" class="button" id="backToSignInButton">Back</button>
+    </div>  </form>
 </div>
 
 <div class="container" id="enable2FAContainer">
@@ -91,25 +161,26 @@
 </div>
 
 <script>
-// Show sign-up form
 document.getElementById('showSignUpForm').addEventListener('click', function() {
   document.getElementById('signInContainer').style.display = 'none';
   document.getElementById('signUpContainer').style.display = 'block';
 });
 
-// Show enable 2FA form
 document.getElementById('showEnable2FAForm').addEventListener('click', function() {
   document.getElementById('signInContainer').style.display = 'none';
   document.getElementById('enable2FAContainer').style.display = 'block';
 });
 
-// Handle back button click
 document.getElementById('backButton').addEventListener('click', function() {
   document.getElementById('enable2FAContainer').style.display = 'none';
   document.getElementById('signInContainer').style.display = 'block';
 });
 
-// Handle sign-up submission
+document.getElementById('backToSignInButton').addEventListener('click', function() {
+  document.getElementById('signUpContainer').style.display = 'none';
+  document.getElementById('signInContainer').style.display = 'block';
+});
+
 document.getElementById('signUpForm').addEventListener('submit', function(event) {
   event.preventDefault();
   var data = {
@@ -144,7 +215,6 @@ document.getElementById('signUpForm').addEventListener('submit', function(event)
   });
 });
 
-// Handle sign-in submission
 document.getElementById('signInForm').addEventListener('submit', function(event) {
   event.preventDefault();
   var signInData = {
@@ -163,7 +233,7 @@ document.getElementById('signInForm').addEventListener('submit', function(event)
   .then(response => response.json())
   .then(json => {
     if (json.success) {
-      window.location.href = './mainPage.html'; // Redirect to the main page after "login"
+      window.location.href = './mainPage.html';
     } else {
       alert('Login failed: ' + json.message);
     }
@@ -173,14 +243,13 @@ document.getElementById('signInForm').addEventListener('submit', function(event)
   });
 });
 
-// Handle 2FA enablement
 document.getElementById('enable2FAButton').addEventListener('click', function() {
-  fetch('http://localhost:3001/twofa/enable-2fa', { // Update URL to new service
+  fetch('http://localhost:3001/twofa/enable-2fa', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ userId: 1 }) // Replace with the actual user ID
+    body: JSON.stringify({ userId: 1 })
   })
   .then(response => response.json())
   .then(json => {
