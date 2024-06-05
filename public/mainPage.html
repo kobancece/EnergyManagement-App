@@ -28,7 +28,6 @@
   .tree-icon {
       width: 50px;
       height: 50px;
-      background-image: url('data:image/png;base64, INSERT_BASE64_ENCODED_IMAGE_HERE');
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
@@ -52,16 +51,20 @@
     <div class="button" id="showTips">Show Usage Tips</div>
   </div>
   
-  <div class="chart-container" id="consumptionChartContainer">
-    <canvas id="consumptionChart"></canvas>
+  <div class="chart-container" id="monthlyConsumptionChartContainer">
+    <canvas id="monthlyConsumptionChart"></canvas>
   </div>
   
   <div class="chart-container" id="yearlyConsumptionChartContainer">
     <canvas id="yearlyConsumptionChart"></canvas>
   </div>
   
-  <div class="chart-container" id="costChartContainer">
-    <canvas id="costChart"></canvas>
+  <div class="chart-container" id="monthlyCostChartContainer">
+    <canvas id="monthlyCostChart"></canvas>
+  </div>
+  
+  <div class="chart-container" id="yearlyCostChartContainer">
+    <canvas id="yearlyCostChart"></canvas>
   </div>
   
   <div class="tips-container" id="tipsContainer">
@@ -93,12 +96,19 @@ function signOut() {
   window.location.href = 'index.html'; // Redirect to sign-in page
 }
 
+function clearCharts() {
+  document.querySelectorAll('.chart-container').forEach(container => container.style.display = 'none');
+  document.querySelectorAll('.tips-container').forEach(container => container.style.display = 'none');
+}
+
+let monthlyConsumptionChart;
+let yearlyConsumptionChart;
+let monthlyCostChart;
+let yearlyCostChart;
+
 document.getElementById('showConsumption').addEventListener('click', function() {
-  document.getElementById('consumptionChartContainer').style.display = 'block';
-  document.getElementById('yearlyConsumptionChartContainer').style.display = 'block';
-  document.getElementById('costChartContainer').style.display = 'none';
-  document.getElementById('tipsContainer').style.display = 'none';
-  
+  clearCharts();
+
   fetch('/energymanagement/monthly-consumption')
     .then(response => response.json())
     .then(data => {
@@ -106,8 +116,9 @@ document.getElementById('showConsumption').addEventListener('click', function() 
       const electricConsumption = data.map(entry => entry.totalElectricConsumption);
       const waterConsumption = data.map(entry => entry.totalWaterConsumption);
 
-      const ctx = document.getElementById('consumptionChart').getContext('2d');
-      const chart = new Chart(ctx, {
+      const ctx = document.getElementById('monthlyConsumptionChart').getContext('2d');
+      if (monthlyConsumptionChart) monthlyConsumptionChart.destroy();
+      monthlyConsumptionChart = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: months,
@@ -139,10 +150,10 @@ document.getElementById('showConsumption').addEventListener('click', function() 
         }
       });
 
-      document.getElementById('consumptionChartContainer').style.display = 'block';
+      document.getElementById('monthlyConsumptionChartContainer').style.display = 'block';
     })
     .catch(err => {
-      console.error('Error fetching consumption data:', err);
+      console.error('Error fetching monthly consumption data:', err);
     });
 
   fetch('/energymanagement/yearly-consumption')
@@ -153,7 +164,8 @@ document.getElementById('showConsumption').addEventListener('click', function() 
       const waterConsumption = data.map(entry => entry.totalWaterConsumption);
 
       const ctx = document.getElementById('yearlyConsumptionChart').getContext('2d');
-      const chart = new Chart(ctx, {
+      if (yearlyConsumptionChart) yearlyConsumptionChart.destroy();
+      yearlyConsumptionChart = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: years,
@@ -193,19 +205,17 @@ document.getElementById('showConsumption').addEventListener('click', function() 
 });
 
 document.getElementById('showCost').addEventListener('click', function() {
-  document.getElementById('consumptionChartContainer').style.display = 'none';
-  document.getElementById('yearlyConsumptionChartContainer').style.display = 'none';
-  document.getElementById('costChartContainer').style.display = 'block';
-  document.getElementById('tipsContainer').style.display = 'none';
-  
-  fetch('/energymanagement/monthly-consumption')
+  clearCharts();
+
+  fetch('/energymanagement/monthly-cost')
     .then(response => response.json())
     .then(data => {
       const months = data.map(entry => entry.month);
       const totalCost = data.map(entry => entry.totalCost);
 
-      const ctx = document.getElementById('costChart').getContext('2d');
-      const chart = new Chart(ctx, {
+      const ctx = document.getElementById('monthlyCostChart').getContext('2d');
+      if (monthlyCostChart) monthlyCostChart.destroy();
+      monthlyCostChart = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: months,
@@ -230,20 +240,21 @@ document.getElementById('showCost').addEventListener('click', function() {
         }
       });
 
-      document.getElementById('costChartContainer').style.display = 'block';
+      document.getElementById('monthlyCostChartContainer').style.display = 'block';
     })
     .catch(err => {
-      console.error('Error fetching cost data:', err);
+      console.error('Error fetching monthly cost data:', err);
     });
 
-  fetch('/energymanagement/yearly-consumption')
+  fetch('/energymanagement/yearly-cost')
     .then(response => response.json())
     .then(data => {
       const years = data.map(entry => entry.year);
       const totalCost = data.map(entry => entry.totalCost);
 
-      const ctx = document.getElementById('costChart').getContext('2d');
-      const chart = new Chart(ctx, {
+      const ctx = document.getElementById('yearlyCostChart').getContext('2d');
+      if (yearlyCostChart) yearlyCostChart.destroy();
+      yearlyCostChart = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: years,
@@ -268,17 +279,15 @@ document.getElementById('showCost').addEventListener('click', function() {
         }
       });
 
-      document.getElementById('costChartContainer').style.display = 'block';
+      document.getElementById('yearlyCostChartContainer').style.display = 'block';
     })
     .catch(err => {
-      console.error('Error fetching cost data:', err);
+      console.error('Error fetching yearly cost data:', err);
     });
 });
 
 document.getElementById('showTips').addEventListener('click', function() {
-  document.getElementById('consumptionChartContainer').style.display = 'none';
-  document.getElementById('yearlyConsumptionChartContainer').style.display = 'none';
-  document.getElementById('costChartContainer').style.display = 'none';
+  clearCharts();
   document.getElementById('tipsContainer').style.display = 'block';
   
   fetch('/energymanagement/tips')

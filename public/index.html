@@ -150,7 +150,7 @@ document.getElementById('signInForm').addEventListener('submit', function(event)
   var signInData = {
     email: document.getElementById('signInEmail').value,
     password: document.getElementById('signInPassword').value,
-    token: document.getElementById('signInToken').value // Add this line
+    token: document.getElementById('signInToken').value
   };
 
   fetch('/energymanagement/login', {
@@ -162,7 +162,7 @@ document.getElementById('signInForm').addEventListener('submit', function(event)
   })
   .then(response => response.json())
   .then(json => {
-    if (json.message === 'Authentication successful') {
+    if (json.success) {
       window.location.href = './mainPage.html'; // Redirect to the main page after "login"
     } else {
       alert('Login failed: ' + json.message);

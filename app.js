@@ -3,10 +3,19 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit'); 
+const session = require('express-session');
 const energymanagementRouter = require('./routers/post');
 const twofaRouter = require('./routers/twofa');
 
 const app = express();
+
+// Configure session middleware
+app.use(session({
+  secret: 'xxxxxx', 
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
 
 app.use(cors()); 
 app.use(bodyParser.json()); // for parsing application/json
@@ -28,12 +37,9 @@ app.use('/twofa/verify-2fa', limiter);
 app.use('/energymanagement', energymanagementRouter);
 app.use('/twofa', twofaRouter);
 
-
-
 // Serve the HTML page for the root route
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
 
 module.exports = app;
