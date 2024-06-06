@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const { v4: uuidv4 } = require('uuid');
-const saltRounds = 10; // for bcrypt
+const saltRounds = 10;
 const rateLimit = require('express-rate-limit');
 
 const loginLimiter = rateLimit({
@@ -55,7 +55,6 @@ router.post('/register', async (req, res) => {
       return res.status(400).send({ message: 'All fields are required' });
   }
   try {
-      // Şifreyi hashle ve sakla
       const hashedPassword = await bcrypt.hash(password, saltRounds);
       const [newUser] = await db.execute(`
           INSERT INTO users (email, username, passwordHash, firstName, lastName, phoneNumber, address, createdAt) 

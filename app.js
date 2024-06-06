@@ -21,12 +21,12 @@ app.use(session({
 
 app.use(cors()); 
 app.use(bodyParser.json()); // for parsing application/json
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files from 'public'
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Rate limiting configuration
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: 'Too many requests from this IP, please try again after 15 minutes'
 });
 
@@ -35,7 +35,6 @@ app.use('/energymanagement/login', limiter);
 app.use('/twofa/enable-2fa', limiter);
 app.use('/twofa/verify-2fa', limiter);
 
-// Use your routers here
 app.use('/energymanagement', energymanagementRouter);
 app.use('/twofa', twofaRouter);
 
